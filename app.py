@@ -61,6 +61,7 @@ def get_info():
             '--dump-json', '--no-playlist',
             '--no-warnings', '--quiet',
             '--extractor-args', 'youtube:skip=dash,hls',
+            '--js-runtimes', 'node',
             '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             url
         ])
@@ -121,6 +122,7 @@ def get_download_url():
             '--get-url', '--no-playlist',
             '--no-warnings', '--quiet',
             '--extractor-args', 'youtube:skip=dash,hls',
+            '--js-runtimes', 'node',
             '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             '-f', fmt['format'],
             url
@@ -128,10 +130,10 @@ def get_download_url():
         stdout, stderr, code = run_ytdlp(args)
 
         if code != 0 or not stdout.strip():
-            # fallback — try simpler format
             stdout, stderr, code = run_ytdlp([
                 '--get-url', '--no-playlist',
                 '--no-warnings', '--quiet',
+                '--js-runtimes', 'node',
                 '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 '-f', 'best',
                 url
