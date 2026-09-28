@@ -10,6 +10,12 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Auto-update yt-dlp to latest on startup (prevents YouTube blocking old versions)
+try:
+    subprocess.run(['yt-dlp', '-U'], capture_output=True, timeout=30)
+except Exception:
+    pass
+
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 QUALITY_MAP = {
@@ -54,9 +60,12 @@ def get_info():
         stdout, stderr, code = run_ytdlp([
             '--dump-json', '--no-playlist',
             '--no-warnings', '--quiet',
+            '--extractor-args', 'youtube:skip=dash,hls',
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             url
         ])
         if code != 0 or not stdout.strip():
+            print('yt-dlp stderr:', stderr[:300])
             return jsonify({'success': False, 'error': 'Could not fetch video info. Check the URL.'}), 400
 
         info = json.loads(stdout.strip().split('\n')[0])
@@ -111,6 +120,8 @@ def get_download_url():
         args = [
             '--get-url', '--no-playlist',
             '--no-warnings', '--quiet',
+            '--extractor-args', 'youtube:skip=dash,hls',
+            '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             '-f', fmt['format'],
             url
         ]
@@ -121,6 +132,7 @@ def get_download_url():
             stdout, stderr, code = run_ytdlp([
                 '--get-url', '--no-playlist',
                 '--no-warnings', '--quiet',
+                '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                 '-f', 'best',
                 url
             ])
