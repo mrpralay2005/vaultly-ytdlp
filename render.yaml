@@ -2,7 +2,7 @@ services:
   - type: web
     name: vaultly-ytdlp
     runtime: python
-    buildCommand: pip install -r requirements.txt && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && apt-get install -y nodejs
+    buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --workers 2 --timeout 120 --bind 0.0.0.0:$PORT
     plan: free
     envVars:
